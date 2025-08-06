@@ -1,4 +1,5 @@
 package com.felipog.qrcode.generator.dto;
 
-public record QrCodeGenerateResponse(String url) {
-}
+public record QrCodeGenerateResponse(
+        String url
+) { }
