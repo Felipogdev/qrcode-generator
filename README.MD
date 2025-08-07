@@ -1,66 +1,97 @@
-# QRCode Generator
+# QR Code Generator
 
-A Java-based application for generating QR codes.
+A robust RESTful service for generating QR codes and storing them in AWS S3, built with Java, Spring Boot, and Docker.
 
 ## Tech Stack
 
-- **Java**: Core language for QR code generation logic.
-- **(Optional) Docker**: For containerized deployment and ease of use.
+- **Java 21**: Core programming language.
+- **Spring Boot**: Application framework for building REST APIs.
+- **AWS S3**: Cloud storage for generated QR code images.
+- **Docker**: Containerization for easy deployment.
+- **Maven**: Build and dependency management.
+- **ZXing**: Library for QR code generation.
 
 ## Features
 
-- Generate QR codes from text input
-- Save QR codes as images
-- Simple to use and configure
+- Generate QR codes from any text input.
+- Store generated QR codes as PNG images in a specified AWS S3 bucket.
+- Retrieve a direct URL to the uploaded QR code image.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Java 8 or above
-- (Optional) Docker
+- Java 21+
+- Maven
+- Docker (optional, for containerized deployment)
+- AWS account with an S3 bucket and proper credentials
 
-### Clone the repository
+### Configuration
+
+Configure your AWS credentials and bucket via environment variables or in your deployment platform:
+
+- `AWS_ACCESS_KEY_ID`: Your AWS access key.
+- `AWS_SECRET_ACCESS_KEY`: Your AWS secret key.
+- `AWS_REGION`: The AWS region for your S3 bucket (e.g., `eu-north-1`).
+- `AWS_BUCKET_NAME`: The name of your S3 bucket.
+
+Alternatively, set them in your environment or `.env` file.
+
+#### Using Maven
 
 ```bash
-git clone https://github.com/Felipogdev/qrcode-generator.git
-cd qrcode-generator
+mvn clean package
+java -jar target/*.jar
 ```
-
-### Build and Run
-
-#### Using Java
-
-```bash
-javac -d bin src/*.java
-java -cp bin Main
-```
-_Replace `Main` with your main class if different._
 
 #### Using Docker
+To build the project, make sure you have docker installed and then on the root of the project, runs
 
 ```bash
-docker build -t qrcode-generator .
-docker run --rm qrcode-generator
+
+ docker build -t <name> .
+
+ docker run --env-file .env -p 8080:8080 <name>
 ```
 
 ## Usage
 
-You can generate a QR code by providing the desired text data. For example:
+### API Endpoint
+
+**POST** `/qr-code`
+
+**Request Body:**
+```json
+{
+  "text": "https://example.com"
+}
+```
+
+**Response:**
+```json
+{
+  "url": "https://your-bucket.s3.your-region.amazonaws.com/uuid-filename"
+}
+```
+
+- The `url` field contains a direct link to your generated QR code image in S3.
+
+## Example cURL
 
 ```bash
-java -cp bin Main "https://example.com"
+curl -X POST http://localhost:8080/qr-code \
+  -H "Content-Type: application/json" \
+  -d '{"text": "https://example.com"}'
 ```
-_Outputs a QR code image file (e.g., `qrcode.png`). Adjust parameters as needed._
 
-## Contributing
+## Project Structure
 
-Contributions are welcome! Please fork the repo and submit a pull request.
+- `controller/QrCodeController.java`: Exposes the REST endpoint.
+- `service/QrCodeGeneratorService.java`: Generates and uploads the QR code.
+- `infrastructure/S3StorageAdapter.java`: Handles AWS S3 storage.
+- `dto/`: Data transfer objects for requests and responses.
 
-## License
-
-Specify your license here.
 
 ---
 
-**Project Repository:** [qrcode-generator](https://github.com/Felipogdev/qrcode-generator)
+_Results may be incomplete. [View more details in the GitHub UI.](https://github.com/Felipogdev/qrcode-generator/search)_
